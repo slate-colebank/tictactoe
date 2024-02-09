@@ -17,10 +17,10 @@ public class Game {
         int gameType = chooseType();
         printBoard();
         while(totalTurns < 9) {
-            checkWin();
             updateBoard(userInput());
             totalTurns++;
             printBoard();
+            checkWin();
 
         }
         
@@ -162,16 +162,9 @@ public class Game {
                     oTot++;
                 }
             }
-            if (xTot == 3) {
-                out.println("X WINS");
-                System.exit(0);
-            } else if (oTot == 3) {
-                out.println("Y WINS");
-                System.exit(0);
-            } else {
-                xTot = 0;
-                oTot = 0;
-            }
+            checkXO(xTot, oTot);
+            xTot = 0;
+            oTot = 0;
         }
 
         
@@ -180,23 +173,16 @@ public class Game {
         oTot = 0;
         for (int col = 0; col < 3; col++) {
             for (int row = 0; row < 3; row++) {
-                char curChar = gameBoard[col][row];
+                char curChar = gameBoard[row][col];
                 if (curChar == 'x') {
                     xTot++;
                 } else if (curChar == 'o') {
                     oTot++;
                 }
             }
-            if (xTot == 3) {
-                out.println("X WINS");
-                System.exit(0);
-            } else if (oTot == 3) {
-                out.println("O WINS");
-                System.exit(0);
-            } else {
-                xTot = 0;
-                oTot = 0;
-            }
+            checkXO(xTot, oTot);
+            xTot = 0;
+            oTot = 0;
         }
 
 
@@ -210,13 +196,7 @@ public class Game {
             } else if (curChar == 'o') {
                 oTot++;
             }
-        }
-        if (xTot == 3) {
-            out.println("X WINS");
-            System.exit(0);
-        } else if (oTot == 3) {
-            out.println("O WINS");
-        } else {
+            checkXO(xTot, oTot);
             xTot = 0;
             oTot = 0;
         }
@@ -229,12 +209,19 @@ public class Game {
             } else if (curChar == 'o') {
                 oTot++;
             }
+            checkXO(xTot, oTot);
+            xTot = 0;
+            oTot = 0;
         }
+    }
+
+    public void checkXO(int xTot, int oTot) {
         if (xTot == 3) {
             out.println("X WINS");
             System.exit(0);
         } else if (oTot == 3) {
             out.println("O WINS");
+            System.exit(0);
         } else {
             xTot = 0;
             oTot = 0;
