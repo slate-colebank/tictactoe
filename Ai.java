@@ -1,24 +1,24 @@
 public class Ai {
-    public int[] takeTurn(char[][] gameBoard, int whosTurn) {
+    public int[] takeTurn(GameBoard gameBoard, int whosTurn) {
         int[] coordinates = chooseMove(gameBoard, whosTurn);
         // coordinates = chooseMove(gameBoard);
         return coordinates;
 
     }
 
-    public int[] chooseMove(char[][] gameBoard, int turn) {
+    public int[] chooseMove(GameBoard gameBoard, int turn) {
         int[] space = {0,0};
         return space;
     }
 
-    public int evaluateBoard(char[][] gameBoard) {
+    public int evaluateBoard(GameBoard gameBoard) {
         // check rows
         int score = 0;
         int xTot = 0;
         int oTot = 0;
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                char curChar = gameBoard[row][col];
+                char curChar = gameBoard.board[row][col];
                 if (curChar == 'x') {
                     xTot++;
                 } else if (curChar == 'o') {
@@ -36,7 +36,7 @@ public class Ai {
         oTot = 0;
         for (int col = 0; col < 3; col++) {
             for (int row = 0; row < 3; row++) {
-                char curChar = gameBoard[row][col];
+                char curChar = gameBoard.board[row][col];
                 if (curChar == 'x') {
                     xTot++;
                 } else if (curChar == 'o') {
@@ -53,7 +53,7 @@ public class Ai {
         xTot = 0;
         oTot = 0;
         for (int i = 0; i < 3; i++) {
-            char curChar = gameBoard[i][i];
+            char curChar = gameBoard.board[i][i];
             if (curChar == 'x') {
                 xTot++;
             } else if (curChar == 'o') {
@@ -66,7 +66,7 @@ public class Ai {
 
         for (int i = 0; i < 3; i++) {
             int j = 2 - i;
-            char curChar = gameBoard[i][j];
+            char curChar = gameBoard.board[i][j];
             if (curChar == 'x') {
                 xTot++;
             } else if (curChar == 'o') {
@@ -85,6 +85,11 @@ public class Ai {
             score += 3;
         } else if (xTot == 1) {
             score += 1;
+        }
+        if (oTot == 2) {
+            score -= 3;
+        } else if (oTot == 1) {
+            score -= 1;
         }
         return score;
     }
