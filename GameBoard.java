@@ -1,12 +1,13 @@
 import static java.lang.System.out;
 
-import java.util.Arrays;
 public class GameBoard {
     char[][] board =   {{' ', ' ', ' '},
                         {' ', ' ', ' '},
                         {' ', ' ', ' '}};
     int openSpacesLeft = 9;
     int currentTurn = 1;
+    int score = 0;
+    int[] latestMove;
     
     public void printBoard() {
         for (int i = 0; i < 3; i++) {
@@ -26,7 +27,9 @@ public class GameBoard {
     
     public char[][] copyGameBoard() {
         GameBoard newGameBoard = new GameBoard();
-        // newGameBoard.currentTurn = this.currentTurn;   D:
+        newGameBoard.currentTurn = this.currentTurn;
+        newGameBoard.openSpacesLeft = this.openSpacesLeft;
+        //newGameBoard.latestMove = this.latestMove;
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 newGameBoard.board[row][col] = this.board[row][col];
@@ -36,17 +39,24 @@ public class GameBoard {
     }
 
     public void updateBoard(int[] input) {
+        changeTurn();
+        this.latestMove = input;
         int row = input[0];
         int col = input[1];
         if (this.currentTurn == 1) {
             this.board[row][col] = 'x';
-            this.currentTurn = 2;
         } else if (this.currentTurn == 2){
             this.board[row][col] = 'o';
+        }
+        openSpacesLeft--;
+    }
+
+    public void changeTurn() {
+        if (this.currentTurn == 1) {
+            this.currentTurn = 2;
+        } else if (this.currentTurn == 2){
             this.currentTurn = 1;
         }
-        
-        openSpacesLeft--;
     }
 
     public boolean checkSpot(int[] input) {
@@ -61,7 +71,7 @@ public class GameBoard {
 
     public int[][] returnOpenSpaces(){
         int spot = 0;
-        int [][] openSpaces = new int[openSpacesLeft][2];
+        int [][] openSpaces = new int[this.openSpacesLeft][2];
         for (int col = 0; col < 3; col++) {
             for (int row = 0; row < 3; row++) {
                 int[] input = {row, col};
@@ -155,5 +165,175 @@ public class GameBoard {
             xTot = 0;
             oTot = 0;
         }
+    }
+
+    public int evaluateBoard(GameBoard gameBoard) {
+        // check rows
+        int score = 0;
+        int xTot = 0;
+        int oTot = 0;
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                char curChar = gameBoard.board[row][col];
+                if (curChar == 'x') {
+                    xTot++;
+                } else if (curChar == 'o') {
+                    oTot++;
+                }
+            }
+            score += calculateScore(xTot, oTot);
+            xTot = 0;
+            oTot = 0;
+        }
+
+        
+        // check columns for a win
+        xTot = 0;
+        oTot = 0;
+        for (int col = 0; col < 3; col++) {
+            for (int row = 0; row < 3; row++) {
+                char curChar = gameBoard.board[row][col];
+                if (curChar == 'x') {
+                    xTot++;
+                } else if (curChar == 'o') {
+                    oTot++;
+                }
+            }
+            score += calculateScore(xTot, oTot);
+            xTot = 0;
+            oTot = 0;
+        }
+
+
+        //check diagonals for a win
+        xTot = 0;
+        oTot = 0;
+        for (int i = 0; i < 3; i++) {
+            char curChar = gameBoard.board[i][i];
+            if (curChar == 'x') {
+                xTot++;
+            } else if (curChar == 'o') {
+                oTot++;
+            }
+            score += calculateScore(xTot, oTot);
+            xTot = 0;
+            oTot = 0;
+        }
+
+        for (int i = 0; i < 3; i++) {
+            int j = 2 - i;
+            char curChar = gameBoard.board[i][j];
+            if (curChar == 'x') {
+                xTot++;
+            } else if (curChar == 'o') {
+                oTot++;
+            }
+            score += calculateScore(xTot, oTot);
+            xTot = 0;
+            oTot = 0;
+        }
+        return score;
+    }
+
+    public int calculateScore(int xTot, int oTot) {
+        int score = 0;
+        if (xTot == 2) {
+            score += 3;
+        } else if (xTot == 1) {
+            score += 1;
+        }
+        if (oTot == 2) {
+            score -= 3;
+        } else if (oTot == 1) {
+            score -= 1;
+        }
+        return score;
+    }
+    
+    public int evaluateBoardNEW() {
+        int score = 0;
+        // evaluate rows
+        int rowX = 0;
+        int rowO = 0;
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                // logic for checking one row
+                rowX = 0;
+                rowO = 0;
+                if (this.board[row][col] == 'x') {
+                    rowX++;
+                }
+                if (this.board[row][col] == 'o') {
+                    rowO++;
+                }
+            }
+            score += heuristic(rowX, rowO);
+        }
+
+        // evaluate columns
+        int colX = 0;
+        int colO = 0;
+        for (int col = 0; col < 3; col++) {
+            for (int row = 0; row < 3; row++) {
+                // logic for checking one column
+                rowX = 0;
+                rowO = 0;
+                if (this.board[row][col] == 'x') {
+                    rowX++;
+                }
+                if (this.board[row][col] == 'o') {
+                    rowO++;
+                }
+            }
+            score += heuristic(colX, colO);
+        }
+
+        // evaluate left to right diagonal
+        int lrdiagX = 0;
+        int lrdiagO = 0;
+        for (int rowCol = 0; rowCol < 3; rowCol++) {
+            rowX = 0;
+            rowO = 0;
+            if (this.board[rowCol][rowCol] == 'x') {
+                lrdiagX++;
+            }
+            if (this.board[rowCol][rowCol] == 'o') {
+                lrdiagO++;
+            }
+            score += heuristic(lrdiagX, lrdiagO);
+        }
+
+        // evaluate right to left diagonal
+        int rldiagX = 0;
+        int rldiagO = 0;
+        for (int row = 0; row < 3; row++) {
+            rowX = 0;
+            rowO = 0;
+            if (this.board[row][2-row] == 'x') {
+                rldiagX++;
+            }
+            if (this.board[row][2-row] == 'o') {
+                rldiagO++;
+            }
+            score += heuristic(rldiagX, rldiagO);
+        }
+
+        return score;
+    }
+
+    public int heuristic(int numX, int numO) {
+        if (numX == 3)
+            return 999;
+        if (numO == 3)
+            return -999;
+        if (numX == 2 && numO == 0)
+            return 3;
+        if (numX == 0 && numO == 2)
+            return -3;
+        if (numX == 1 && numO == 0)
+            return 1;
+        if (numX == 0 && numO == 1)
+            return -1;
+        return 0;
     }
 }

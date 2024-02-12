@@ -15,16 +15,38 @@ public class Game {
                         // {' ', ' ', ' '}};
 
     public void gameStart() {
-        GameBoard board = new GameBoard();
-        GameTreeNode root = new GameTreeNode(board);
-        root.expandChildren(DEPTH_LIMIT);
-        for (int i = 0; i < root.children.size(); i++) {
-            root.children.get(i).expandChildren(DEPTH_LIMIT);
+        // testing simple ai turn
+        GameBoard testBoard = new GameBoard();
+        int testGameType = chooseType();
+        testBoard.printBoard();
+        int totalTurns = 0;
+        while (totalTurns < 9) {
+            testBoard.updateBoard(userInput(testBoard));
+            testBoard.printBoard();
+            if (whosTurn == 1) {whosTurn = 2;} else {whosTurn = 1;}
+            testBoard.updateBoard(aiInput(testBoard));
+            // testBoard.updateBoard(userInput(testBoard));
+            testBoard.printBoard();
+            if (whosTurn == 1) {whosTurn = 2;} else {whosTurn = 1;}
+            totalTurns++;
         }
         System.exit(0);
+        // Test Different States Here
+        while(totalTurns < 3) {
+            testBoard.updateBoard(userInput(testBoard));
+            System.out.println("score: " + testBoard.evaluateBoardNEW());
+            System.out.println("test");
+            totalTurns++;
+            if (whosTurn == 1) {whosTurn = 2;} else {whosTurn = 1;}
+            testBoard.printBoard();
+        }
+        System.exit(0);
+        
+        GameBoard board = new GameBoard();
+        GameTreeNode root = new GameTreeNode(board);
+        root.expandNode(0);
+        System.exit(0);
 
-        int eval = ai.evaluateBoard(board);
-        out.println("Game board eval: " + eval);
         // System.exit(0);
         int gameType = chooseType();
         board.printBoard();
@@ -66,7 +88,6 @@ public class Game {
     }
 
     public int[] userInput(GameBoard board) {
-        int whosTurn = 0;
         int row = -1;
         int col = -1;
         boolean checkSpot = true;
@@ -103,58 +124,10 @@ public class Game {
 
     public int[] aiInput(GameBoard board) {
         out.println("Player " + whosTurn + "'s turn...");
-        int[] turn = ai.takeTurn(board, whosTurn);
-        out.println(turn[0] + ", " + turn[1]);
-        out.println("Nodes expanded = 1");
-        if (whosTurn == 1) {
-            whosTurn = 2;
-        } else {
-            whosTurn = 1;
-        }
-        return turn;
-    }
-
-    // public void printBoard() {
-    //     for (int i = 0; i < 3; i++) {
-    //         for (int j = 0; j < 3; j++) {
-    //             out.print(" " + gameBoard[i][j] + " ");
-    //             if (j < 2) {
-    //                 out.print('|');
-    //             } else {
-    //                 out.println();
-    //             }
-    //         }
-    //         if (i < 2) {
-    //             out.println("---+---+---");
-    //         }
-    //     }
-    // }
-
-    // public void updateBoard(int[] input) {
-    //     int row = input[0];
-    //     int col = input[1];
-    //     if (whosTurn == 1) {
-    //         gameBoard[row][col] = 'x';
-    //     } else if (whosTurn == 2){
-    //         gameBoard[row][col] = 'o';
-    //     }
         
-    //     if (whosTurn == 1) {
-    //         whosTurn = 2;
-    //     } else {
-    //         whosTurn = 1;
-    //     }
-    // }
-
-    // public boolean isFull(int[] input) {
-    //     int row = input[0];
-    //     int col = input[1];
-    //     if (gameBoard[row][col] != ' ') {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
-
+        int[] result = ai.takeTurn(board);
+        out.println("Nodes expanded = 1");
+        return result;
+    }
     
 }

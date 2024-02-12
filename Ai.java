@@ -1,96 +1,19 @@
 public class Ai {
-    public int[] takeTurn(GameBoard gameBoard, int whosTurn) {
-        int[] coordinates = chooseMove(gameBoard, whosTurn);
-        // coordinates = chooseMove(gameBoard);
-        return coordinates;
+    public int[] takeTurn(GameBoard gameBoard) {
+        GameTreeNode root = new GameTreeNode(gameBoard);
 
-    }
+        root.expandNode(0);
+        // gameBoard.openSpacesLeft--;
 
-    public int[] chooseMove(GameBoard gameBoard, int turn) {
-        int[] space = {0,0};
-        return space;
-    }
-
-    public int evaluateBoard(GameBoard gameBoard) {
-        // check rows
-        int score = 0;
-        int xTot = 0;
-        int oTot = 0;
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                char curChar = gameBoard.board[row][col];
-                if (curChar == 'x') {
-                    xTot++;
-                } else if (curChar == 'o') {
-                    oTot++;
-                }
+        for (int i = 0; i < root.children.size(); i++) {
+            System.out.println("child " + i + ": " + root.children.get(i).miniMaxValue);
+            if (root.children.get(i).miniMaxValue == root.miniMaxValue) {
+                // return root.children.get(i).latestMove;
+                return root.children.get(i).gameBoard.latestMove;
             }
-            score += calculateScore(xTot, oTot);
-            xTot = 0;
-            oTot = 0;
         }
-
-        
-        // check columns for a win
-        xTot = 0;
-        oTot = 0;
-        for (int col = 0; col < 3; col++) {
-            for (int row = 0; row < 3; row++) {
-                char curChar = gameBoard.board[row][col];
-                if (curChar == 'x') {
-                    xTot++;
-                } else if (curChar == 'o') {
-                    oTot++;
-                }
-            }
-            score += calculateScore(xTot, oTot);
-            xTot = 0;
-            oTot = 0;
-        }
-
-
-        //check diagonals for a win
-        xTot = 0;
-        oTot = 0;
-        for (int i = 0; i < 3; i++) {
-            char curChar = gameBoard.board[i][i];
-            if (curChar == 'x') {
-                xTot++;
-            } else if (curChar == 'o') {
-                oTot++;
-            }
-            score += calculateScore(xTot, oTot);
-            xTot = 0;
-            oTot = 0;
-        }
-
-        for (int i = 0; i < 3; i++) {
-            int j = 2 - i;
-            char curChar = gameBoard.board[i][j];
-            if (curChar == 'x') {
-                xTot++;
-            } else if (curChar == 'o') {
-                oTot++;
-            }
-            score += calculateScore(xTot, oTot);
-            xTot = 0;
-            oTot = 0;
-        }
-        return score;
-    }
-
-    public int calculateScore(int xTot, int oTot) {
-        int score = 0;
-        if (xTot == 2) {
-            score += 3;
-        } else if (xTot == 1) {
-            score += 1;
-        }
-        if (oTot == 2) {
-            score -= 3;
-        } else if (oTot == 1) {
-            score -= 1;
-        }
-        return score;
+        System.out.println("root: " + root.miniMaxValue);
+        System.out.println("Error: ai could not chose move");
+        return null;
     }
 }
